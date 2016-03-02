@@ -1,0 +1,201 @@
+<% layout('admin/shared/_layout') -%>
+    <link rel="stylesheet" href="/javascripts/kindeditor/themes/default/default.css" />
+    <link rel="stylesheet" href="/javascripts/kindeditor/plugins/code/prettify.css" />
+    <script src="/javascripts/knockout.js"></script>
+    <script charset="utf-8" src="/javascripts/kindeditor/kindeditor-all-min.js"></script>
+    <script charset="utf-8" src="/javascripts/kindeditor/lang/zh-CN.js"></script>
+    <script charset="utf-8" src="/javascripts/kindeditor/plugins/code/prettify.js"></script>
+
+
+    <div class="col-sm-9">
+        <div role="form">
+            <div class="input-group form-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default 
+                     dropdown-toggle" data-toggle="dropdown">
+                        <!-- ko text: source -->
+                        <!-- /ko -->
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">原创</a></li>
+                        <li><a href="#">转载</a></li>
+                        <li><a href="#">其他</a></li>
+                    </ul>
+                </div>
+                <!-- /btn-group -->
+                <input type="text" data-bind="value:title" class="form-control" placeholder="请输入文章标题" required>
+            </div>
+            <div class="input-group form-group">
+                <label class="input-group-addon">固定链接：</label>
+                <span class="input-group-addon">http://www.xdlysk.com/2016/02/26/</span>
+                <input type="text" data-bind="value:partialUrl" class="form-control" placeholder="请输入url" required>
+                <span class="input-group-addon">.html</span>
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-success">复制</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <textarea id="content" cols="100" rows="8" style="width:100%;height:400px;visibility:hidden;"></textarea>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">发布<span class="caret"></span></h3>
+            </div>
+            <div class="panel-body">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" data-bind="click:$root.save">保存草稿</button>
+                    <button type="button" class="btn btn-default" data-bind="click:$root.save">预览</button>
+                    <button type="button" class="btn btn-default" data-bind="click:$root.save">发布</button>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">标签<span class="caret"></span></h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="多个标签使用,隔开">
+                    <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">添加</button>
+                        </span>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">分类<span class="caret"></span></h3>
+            </div>
+            <div class="panel-body" style="max-height:250px; overflow-y:auto;">
+                <ul class="list-group" data-bind="foreach:categories">
+                    <li class="list-group-item">
+                        <label>
+                            <input type="checkbox" /><span data-bind="text:display"></span></label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">keywords<span class="caret"></span></h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <textarea class="form-control" rows="3" data-bind="value:keywords"></textarea>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">description<span class="caret"></span></h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <textarea class="form-control" rows="3" data-bind="value:description"></textarea>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var editor;
+        
+        var aid = '<%= aid %>';
+        aid = aid == 'undefined'?'':aid; 
+        
+        var ArticleModel = function(){
+            var self = this;
+            self.source = ko.observable('原创');
+            self.title = ko.observable();
+            self.partialUrl = ko.observable();
+            self.siteUrl = ko.observable();
+            self.state = ko.observable();
+            self.categories = ko.observableArray();
+            self.tags = ko.observableArray();
+            self.keywords = ko.observable();
+            self.description = ko.observable();
+            
+            function combineModel(){
+                return {
+                    source:ko.unwrap(self.source),
+                    title:ko.unwrap(self.title),
+                    partialUrl:ko.unwrap(self.partialUrl),
+                    content:editor.html(),
+                    state:ko.unwrap(self.state),
+                    tags:ko.unwrap(self.tags),
+                    categories:ko.unwrap(self.categories),
+                    keywords:ko.unwrap(self.keywords),
+                    description:ko.unwrap(self.description)
+                };
+            }
+            
+            self.save=function(){
+                self.state(0);
+                var data = combineModel();
+                $.ajax({
+                    url:'/admin/article/edit',
+                    type:'post',
+                    data:data,
+                    success:function(data){
+                        if(!data.success){
+                            alert(data.msg);
+                        }
+                    },
+                    complete:function(){
+                        
+                    }
+                })
+            };
+        }
+        
+        var am = new ArticleModel();
+        
+        ko.applyBindings(am);
+        
+        if(aid){
+            $.get('/admin/article/content/'+aid,function(data){
+                console.log(data);
+            })
+        }
+        $.get('/admin/article/category',function(data){
+            am.categories(data);
+        });
+        
+        $.get('/admin/article/tag',function(data){
+            
+        });
+
+
+
+        KindEditor.ready(function(K) {
+			 editor = K.create('#content', {
+				cssPath : '/javascripts/kindeditor/plugins/code/prettify.css',
+				uploadJson : '../asp.net/upload_json.ashx',
+				fileManagerJson : '../asp.net/file_manager_json.ashx',
+				allowFileManager : true,
+				afterCreate : function() {
+					var self = this;
+					K.ctrl(document, 13, function() {
+						self.sync();
+						K('form[name=example]')[0].submit();
+					});
+					K.ctrl(self.edit.doc, 13, function() {
+						self.sync();
+						K('form[name=example]')[0].submit();
+					});
+				}
+			});
+			prettyPrint();
+		});
+    </script>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <%= title %>
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body class="home blog">
+
+    <div class="site-container">
+        <!-- header start -->
+        <% include header.html %>
+            <!-- header end -->
+
+            <!-- content start -->
+            <%- body -%>
+                <!-- content end -->
+
+                <!-- footer start -->
+                <% include footer.html %>
+                    <!-- footer end -->
+    </div>
+</body>
+
+</html>

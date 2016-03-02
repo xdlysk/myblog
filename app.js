@@ -13,7 +13,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 //set ejs engine file endwith html
-app.engine('html', require('ejs').renderFile); 
+app.engine('html', require('ejs-mate')/*.renderFile*/); 
 app.set('view engine', 'html');  
 
 // uncomment after placing your favicon in /public

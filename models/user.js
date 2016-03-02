@@ -1,14 +1,14 @@
 //define user model
 var userModel = {
-    userName:String,
-    passWord:String,
-    niceName:String,
-    regDate:Date,
-    status:Number,
-    displayName:String,
-    meta:[{
-        name:String,
-        val:String
+    userName: String,
+    passWord: String,
+    regDate: { type: Date, default: Date.now },
+    enable: { type: Boolean, default: true },
+    level: { type: Number, default: 4 },
+    displayName: String,
+    meta: [{
+        name: String,
+        val: String
     }]
 };
 
