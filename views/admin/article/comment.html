@@ -1,0 +1,38 @@
+<% layout('admin/shared/_layout') -%>
+<table class="table">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>Email</th>
+            <th>website</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    
+    <tbody data-bind="foreach:items">
+        <tr>
+            <td data-bind="text:author"></td>
+            <td data-bind="text:email"></td>
+            <td data-bind="text:url"></td>
+            <td data-bind="text:postTime"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    function CommentModel(){
+        var self = this;
+        
+        self.items = ko.observableArray([]);
+                
+    }
+    
+    var cm = new CommentModel();
+    ko.applyBindings(cm);
+    
+    $.get('/admin/article/comment/<%= articleId %>',function(data){
+        if(data.success){
+            cm.items(data.comments);
+        }
+    });
+</script>

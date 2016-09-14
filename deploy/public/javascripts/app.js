@@ -1,0 +1,1 @@
+requirejs.config({baseUrl:"../javascripts",paths:{jquery:"jquery-2.2.1.min",knockout:"knockout"}}),requirejs(["jquery","knockout"],function(o,e){console.log(o("body")),console.log(e)});

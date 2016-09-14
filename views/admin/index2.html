@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyBlog</title>
+
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="/stylesheets/style2.css" rel="stylesheet">
+    <script data-main="/javascripts/app.js" src="/javascripts/require.js"></script>
+</head>
+
+<body style="opacity: 1; margin-left: 0px;">
+    <div id="head-nav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle"><span class="fa fa-gear"></span></button><a href="#" class="navbar-brand"><span>MyBlog</span></a></div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">Contact <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            
+                            <li><a href="#">Something else here</a></li>
+                            <li class="dropdown-submenu"><a href="#">Sub menu</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Action</a></li>
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">Large menu <b class="caret"></b></a>
+                        <ul class="dropdown-menu col-menu-2">
+                            <li class="col-sm-6 no-padding">
+                                <ul>
+                                    <li class="dropdown-header"><i class="fa fa-group"></i>Users</li>
+                                    <li><a href="#">Action</a></li>
+                                   
+                                    <li class="dropdown-header"><i class="fa fa-gear"></i>Config</li>
+                                    <li><a href="#">Action</a></li>
+                                    
+                                </ul>
+                            </li>
+                            <li class="col-sm-6 no-padding">
+                                <ul>
+                                    <li class="dropdown-header"><i class="fa fa-legal"></i>Sales</li>
+                                    <li><a href="#">New sale</a></li>
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right user-nav">
+                    <li class="dropdown profile_menu">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+                            <img alt="Avatar" src="./Clean Zone_files/avatar2.jpg"><span>xdlysk</span><b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">My Account</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Sign Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right not-nav">
+                    
+                    <li class="button dropdown"><a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-globe"></i><span class="bubble">2</span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="nano nscroller has-scrollbar">
+                                    <div class="content" tabindex="0" style="right: -17px;">
+                                        <ul>
+                                            <li><a href="#"><i class="fa fa-cloud-upload info"></i><b>Daniel</b> is now following you <span class="date">2 minutes ago.</span></a></li>
+                                            <li><a href="#"><i class="fa fa-male success"></i><b>Michael</b> is now following you <span class="date">15 minutes ago.</span></a></li>
+                                            <li><a href="#"><i class="fa fa-bug warning"></i><b>Mia</b> commented on post <span class="date">30 minutes ago.</span></a></li>
+                                            <li><a href="#"><i class="fa fa-credit-card danger"></i><b>Andrew</b> killed someone <span class="date">1 hour ago.</span></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="pane" style="display: none;">
+                                        <div class="slider" style="height: 20px; top: 0px;"></div>
+                                    </div>
+                                </div>
+                                <ul class="foot">
+                                    <li><a href="#">View all activity </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="cl-wrapper" class="fixed-menu">
+        <!--Sidebar item function-->
+        <!--Sidebar sub-item function-->
+        <div class="cl-sidebar">
+            <div class="cl-toggle"><i class="fa fa-bars"></i></div>
+            <div class="cl-navblock">
+                <div class="menu-space" style="height: 350px;">
+                    <div class="content" tabindex="0" style="right: -17px;">
+                        <div class="side-user">
+                            <div class="info">
+                                <p>Disk Usage: 40 <b>GB</b> / 100 <b>GB</b></p>
+                                <div class="progress progress-user">
+                                    <div style="width: 40%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="40" role="progressbar" class="progress-bar progress-bar-info"><span class="sr-only">50% Complete (success)</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="cl-vnavigation">
+                            <li><a href="#"><i class="fa fa-text-height"></i><span>Dashboard</span></a></li>
+                            <li class="parent open"><a href="#"><i class="fa fa-smile-o"></i><span>UI Elements</span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="#">General</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="search-field collapse-button">
+                    <input type="text" placeholder="Search..." class="form-control search">
+                    <button id="sidebar-collapse" class="btn btn-default"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="pcont" class="container-fluid">
+            <div class="cl-mcont">
+                <div class="stats_bar">
+                    <div class="butpro butstyle flat">
+                        <div class="sub">
+                            <h2>CLIENTS</h2><span id="total_clientes">170</span></div>
+                        <div class="stat"><span class="spk1"><canvas width="74" height="17" style="display: inline-block; width: 74px; height: 17px; vertical-align: top;"></canvas></span></div>
+                    </div>
+                </div>
+                <div class="row dash-cols">
+                    <div class="col-sm-6 col-md-6">
+                        <ul class="timeline">
+                            <li><i class="fa fa-comment"></i><span class="date">5 Jan</span>
+                                <div class="content">
+                                    <p><strong>John</strong> has called Shenlong with <strong>You</strong>.</p><small>A minute ago</small></div>
+                            </li>
+                            <li><i class="fa fa-envelope green"></i><span class="date">5 Jan</span>
+                                <div class="content"><i class="fa fa-paperclip pull-right"></i>
+                                    <p><strong>Bob</strong>
+                                        <br>This is a message for you in your birthday.</p>
+                                </div>
+                            </li>
+                            <li><i class="fa fa-file red"></i><span class="date">5 Jan</span>
+                                <div class="content">
+                                    <p><strong>Michael</strong> has wrote on your wall:</p>
+                                </div>
+                            </li>
+                            <li><i class="fa fa-globe purple"></i><span class="date">5 Jan</span>
+                                <div class="content">
+                                    <p><strong>María</strong> This is a message for you in your birthday.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <div class="block-flat pie-widget">
+                            <div class="content no-padding">
+                                <h4 class="no-margin">Top 10 Products</h4>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div id="ticket-chart" style="height: 160px; padding: 0px; position: relative;">
+                                            <canvas class="flot-base" width="232" height="160" style="direction: ltr; position: absolute; left: 0px; top: 0px; width: 232px; height: 160px;"></canvas>
+                                            <canvas class="flot-overlay" width="232" height="160" style="direction: ltr; position: absolute; left: 0px; top: 0px; width: 232px; height: 160px;"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <table class="no-borders no-strip padding-sm">
+                                            <tbody class="no-border-x no-border-y">
+                                                <tr>
+                                                    <td style="width:15px;">
+                                                        <div data-color="#649BF4" class="legend" style="background: rgb(100, 155, 244);"></div>
+                                                    </td>
+                                                    <td>Responsive</td>
+                                                    <td class="text-right"><b>$3.500</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div data-color="#19B698" class="legend" style="background: rgb(25, 182, 152);"></div>
+                                                    </td>
+                                                    <td>Corporate Site</td>
+                                                    <td class="text-right"><b>$3.500</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div data-color="#BD3B47" class="legend" style="background: rgb(189, 59, 71);"></div>
+                                                    </td>
+                                                    <td>Creative Portfolio</td>
+                                                    <td class="text-right"><b>$3.500</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div data-color="#DD4444" class="legend" style="background: rgb(221, 68, 68);"></div>
+                                                    </td>
+                                                    <td>Wordpress Theme</td>
+                                                    <td class="text-right"><b>$3.500</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div data-color="#FD9C35" class="legend" style="background: rgb(253, 156, 53);"></div>
+                                                    </td>
+                                                    <td>Photography Template</td>
+                                                    <td class="text-right"><b>$3.500</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row stats">
+                                    <div class="col-sm-6">
+                                        <div class="spk4 pull-right">
+                                            <canvas width="54" height="30" style="display: inline-block; width: 54px; height: 30px; vertical-align: top;"></canvas>
+                                        </div>
+                                        <p>New Visitors</p>
+                                        <h5>146</h5></div>
+                                    <div class="col-sm-6">
+                                        <div class="spk5 pull-right">
+                                            <canvas width="54" height="30" style="display: inline-block; width: 54px; height: 30px; vertical-align: top;"></canvas>
+                                        </div>
+                                        <p>Old Visitors</p>
+                                        <h5>146</h5></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<% layout('admin/shared/_layout') -%>
+<button type="button" class="btn btn-primary" data-bind="click:add">添加</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>展示</th>
+            <th>值</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    
+    <tbody data-bind="foreach:items">
+        <tr>
+            <td><input type="text" class="form-control" data-bind="value:t"></td>
+            <td><input type="text" class="form-control" data-bind="value:v"></td>
+            <td>
+                <button type="button" class="btn btn-primary" data-bind="click:$root.save">保存</button>
+                <button type="button" class="btn btn-danger" data-bind="click:$root.remove">删除</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    function CategoryModel(){
+        var self = this;
+        
+        self.items = ko.observableArray([]);
+        
+        self.formatModel=function(arr){
+            return ko.utils.arrayMap(arr,function(x){
+               return {
+                   id:ko.observable(x._id),
+                   t:ko.observable(x.display),
+                   v:ko.observable(x.value),
+                   n:ko.observable(false)
+               }; 
+            });
+        }
+        
+        self.save = function(item){
+            $.post('/admin/article/category',{
+                t:item.t(),
+                v:item.v(),
+                id:item.id()
+            },function(data){
+                if(data.success){
+                    item.n(false);
+                    item.id(data.id);
+                }else{
+                    alert(data.msg);
+                }
+            })
+        }
+        
+        self.add = function(){
+            self.items.push({
+                id:ko.observable(''),
+                t:ko.observable(''),
+                v:ko.observable(''),
+                n:ko.observable(true)
+            });
+        }
+        
+        self.remove = function(item){
+            if(item.n()){
+                cm.items.remove(item);
+                return;
+            }
+            $.ajax({
+                type:'delete',
+                url:'/admin/article/category/'+item.id(),
+                success:function(data){
+                    if(data.success){
+                        cm.items.remove(item);
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            })
+        }
+        
+    }
+    
+    var cm = new CategoryModel();
+    ko.applyBindings(cm);
+    
+    $.get('/admin/article/category',function(data){
+        cm.items(cm.formatModel(data));
+    });
+</script>

@@ -1,0 +1,147 @@
+<% layout('blog/shared/_layout') -%>
+    <%
+    var postTime =new Date(article.postTime.time).format('yyyy-MM-dd');
+%>
+<script src="/javascripts/highlight.pack.js"></script>
+<link rel="stylesheet" href="/stylesheets/vs.css">
+<script>hljs.initHighlightingOnLoad();</script>
+        <div id="content" class="site-content">
+            <div id="primary" class="content-area">
+                <main id="main" class="site-main" role="main">
+                    <article class="post">
+                        <header class="entry-header">
+                            <h1 class="entry-title">【<%= article.source %>】<%= article.title %></h1>
+                            <div class="entry-meta">
+                                <span class="posted-on">Posted on 
+                            <a href="<%= siteUrl %>/article/<%= article.id %>" rel="bookmark">
+                                <time class="entry-date published updated"><%= postTime %></time>
+                            </a>
+                        </span>
+                                <span> by <span class="author vcard">
+                            <a class="url fn n" href="<%= siteUrl %>/author/<%= article.poster %>"><%= article.poster %></a>
+                        </span></span>
+                            </div>
+                            <!-- .entry-meta -->
+                        </header>
+                        <div class="entry-content">
+                            <%- article.content %>
+                            <div style="margin-top: 15px; font-style: italic">
+                            <%
+                            if(article.source==='原创'){
+                            %>
+<p><strong>原创文章，转载请注明：</strong> 转载自<a href="<%= siteUrl %>"><%= siteName %></a></p>
+                            <%
+                            }
+                            %>
+                            <p><strong>本文链接地址:</strong> <a href="<%= siteUrl %>/article/<%= article.id %>"><%= article.title %></a>[<%= siteUrl %>/article/<%= article.id %>]</p>
+</div>
+                        </div>
+                        <footer class="entry-footer">
+                            <%
+                                    if(article.categories && article.categories[0]){
+                                    %>
+                                    <span class="cat-links">Posted in 
+                                    <%
+                                        article.categories.forEach(ca=>{
+                                            if(ca.v){
+                                            %>
+                                            <a href="<%= siteUrl %>/category/<%= ca.v %>" rel="category tag"><%= ca.t %></a>
+                                            <%
+                                            }
+                                        })
+                                            %>
+                                          </span>  
+                                            <%
+                                    }
+                                    %>
+                            
+                            <%
+                                    if(article.tags && article.tags[0]){
+                                    %>
+                                    <span class="tags-links">Tagged 
+                                    <%
+                                        article.tags.forEach(ca=>{
+                                            if(ca.v){
+                                            %>
+                                            <a href="<%= siteUrl %>/tag/<%= ca.v %>" rel="tag"><%= ca.t %></a>
+                                            <%
+                                            }
+                                        })
+                                            %>
+                                        </span>    
+                                            <%
+                                    }
+                                    %>
+                        </footer>
+                    </article>
+                    <%
+                    if(prevArticle || nextArticle){
+                    %>
+                    <nav class="navigation post-navigation" role="navigation">
+                        <h1 class="screen-reader-text">Post navigation</h1>
+                        <div class="nav-links">
+                            <%
+                            if(prevArticle){
+                            %>
+                            <div class="nav-previous"><a href="<%= siteUrl %>/article/<%= prevArticle.id %>" rel="prev"><span class="meta-nav">←</span>&nbsp;<%= prevArticle.title %></a></div>                            
+                            <%
+                            }
+                            if(nextArticle){
+                            %>
+                            <div class="nav-next"><a href="<%= siteUrl %>/article/<%= nextArticle.id %>" rel="next"><%= nextArticle.title %>&nbsp;<span class="meta-nav">→</span></a></div>
+                            <%
+                            }
+                            %>
+                        </div><!-- .nav-links -->
+                    </nav>
+                    <%
+                    }
+                    %>
+                    
+    <div id="comments" class="comments-area color-border-top">
+        <h2 class="comments-title">“<span><%= article.title %></span>”的评论</h2>
+        <div id="commtens-list">
+            
+        </div>
+        <div id="respond" class="comment-respond">
+            <h3 id="reply-title" class="comment-reply-title">留下您的评论</h3>				
+            <form action="/article/comment" method="post" id="commentform" class="comment-form" novalidate="">
+                <p class="comment-notes">
+                    <span id="email-notes">Email地址不会被公开</span>
+                    <span class="required">*</span>为必填
+                </p>
+                <p class="comment-form-comment">
+                    <label for="comment">内容</label> 
+                    <textarea id="comment" style="width:75%" name="comment" cols="45" rows="8" maxlength="65525" aria-required="true" required="required"></textarea>
+                </p>
+                <p class="comment-form-author">
+                    <label for="author">姓名 <span class="required">*</span></label> 
+                    <input id="author" name="author" type="text" value="" size="30" maxlength="245" aria-required="true" required="required">
+                </p>
+                <p class="comment-form-email">
+                    <label for="email">Email <span class="required">*</span></label> 
+                    <input id="email" name="email" type="email" value="" size="30" maxlength="100" aria-describedby="email-notes" aria-required="true" required="required">
+                </p>
+                <p class="comment-form-url">
+                    <label for="url">网站</label> 
+                    <input id="url" name="url" type="url" value="" size="30" maxlength="200">
+                </p>
+                <p class="form-submit">
+                    <input name="submit" type="submit" id="submit" class="submit" value="提交评论"> 
+                    <input type="hidden" name="articleId" value="<%= article.id %>" id="articleId">
+                    <input type="hidden" name="comment_parent" id="comment_parent" value="0">
+                </p>				
+            </form>
+        </div><!-- #respond -->
+    </div>
+    </main>
+</div>
+<div id="secondary" class="widget-area" role="complementary">
+    <% include shared/sidebar.html %>
+</div>
+</div>
+<script>
+    $(function(){
+        $("#commtens-list").load('/article/comment/<%= article.id %>');
+    })
+</script>

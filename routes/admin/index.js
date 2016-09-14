@@ -1,12 +1,20 @@
 var express = require('express');
 var setup = require('./setup');
 var article = require('./article');
+var common = require('./common');
 var config = require('../../utils/config');
-var util = require('../../utils/util');
+var helper = require('../../utils/helper');
 var blogcontext = require('../../utils/blogcontext');
+const settingService = require('../../service/setting');
 var router = express.Router();
 
 router.use('/setup', setup);
+
+//后台无需缓存etage
+router.all('*', function (req, res, next) {
+    res.append("Etag", Date.now());
+    next();
+});
 
 router
     .get('/login', function (req, res, next) {
@@ -16,8 +24,9 @@ router
         var data = req.body;
         if (!data.username || !data.password) {
             res.json({ success: false, msg: '请输入用户名或密码' });
+            return;
         }
-        var epassword = util.encrypt(data.password, config.admin.generalEncryptKey);
+        var epassword = helper.encrypt(data.password, config.admin.generalEncryptKey);
         blogcontext.User.findOne({ userName: data.username, passWord: epassword }, function (err, user) {
             if (err) {
                 res.send(500, err);
@@ -33,7 +42,7 @@ router
                     httpOnly: true,
                     path: '/admin'
                 };
-                var value = util.encrypt(JSON.stringify({
+                var value = helper.encrypt(JSON.stringify({
                     username: user.userName,
                     displayname: user.displayName
                 }), config.admin.cookieEncryptKey);
@@ -53,7 +62,7 @@ function checkAuthorization(req) {
         return false;
     }
     //有cookie需验证
-    var dstring = util.decrypt(authvalue, config.admin.cookieEncryptKey);
+    var dstring = helper.decrypt(authvalue, config.admin.cookieEncryptKey);
     var obj = JSON.parse(dstring);
     var now = Date.now();
     if (obj.expired <= now) {
@@ -63,29 +72,49 @@ function checkAuthorization(req) {
     return true;
 }
 
-router.get('/logout',function(req,res,next){
+router.get('/logout', function (req, res, next) {
     res.clearCookie(config.admin.cookieKey, { path: '/admin' });
     res.redirect('/admin/login');
 });
 
 router.all('*', function (req, res, next) {
-    var username = checkAuthorization(req);
-    if (username) {
-        next();
-    } else {
+    var validate = checkAuthorization(req);
+    if (!validate) {
         res.redirect('/admin/login?returnUrl=' + req.path);
+        return;
     }
+    
+    settingService.getSiteConfig((err, siteconfig) => {
+        if (err) {
+            res.send(404, err);
+        }
+        req.siteconfig = {
+            siteName: siteconfig.siteName,
+            siteDes: siteconfig.siteDes,
+            siteUrl: siteconfig.siteUrl
+        };
+        next();
+    })
 });
 
 router.use('/article', article);
 
+router.use('/common', common);
+
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-    res.render('admin/index',{title:''});
+    res.render('admin/index', { title: '' });
 });
 
-router.get('/dashboard',function(req,res,next){
-    res.render('admin/dashboard',{title:''})
+router.get('/dashboard', function (req, res, next) {
+    res.render('admin/dashboard', { title: '' })
 })
+
+
+//dashboard2
+
+router.get('/index2',(req,res,next)=>{
+    res.render('admin/index2', { title: '' })
+});
 
 module.exports = router;

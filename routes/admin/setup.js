@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 var blogcontext = require('../../utils/blogcontext');
 var config = require('../../utils/config');
-var util = require('../../utils/util');
+var helper = require('../../utils/helper');
+var path = require('path');
+var fs = require('fs');
 
 router.get('/', function (req, res, next) {
     blogcontext.SiteConfig.findOne(function (err, siteconfig) {
@@ -25,6 +27,25 @@ router.post('/', function (req, res, next) {
         siteDes: req.body.siteDes,
         siteUrl: req.body.siteUrl
     });
+    
+    //初始化上传目录
+    var uploadroot = config.admin.uploadConfig.uploadDir;
+    try {
+        fs.statSync(uploadroot);
+    } catch (error) {
+        fs.mkdirSync(uploadroot);
+    }
+    var subdirs = config.admin.uploadConfig.uploadSubDirs.split(/,/g);
+    for (var i = 0, l = subdirs.length; i < l; i++) {
+        var sp = path.join(uploadroot, subdirs[i]);
+        try {
+            fs.statSync(sp);
+            continue;
+        } catch (error) {
+            fs.mkdirSync(sp);
+        }
+    }
+
 
     blogcontext.SiteConfig.remove({}, function () {
         m.save(function (err, m) {
@@ -32,7 +53,7 @@ router.post('/', function (req, res, next) {
             //add user
             var user = new blogcontext.User({
                 userName: req.body.userName,
-                passWord: util.encrypt(req.body.passWord, config.admin.generalEncryptKey)
+                passWord: helper.encrypt(req.body.passWord, config.admin.generalEncryptKey)
             });
             user.save(function (err, user) {
                 if (err) { res.send(500, err); }

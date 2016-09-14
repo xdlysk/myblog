@@ -1,0 +1,14 @@
+{
+  "name": "autoback",
+  "version": "1.0.0",
+  "description": "backup the blog data in mongodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "xdlysk",
+  "license": "ISC",
+  "dependencies": {
+    "emailjs": "^1.0.4"
+  }
+}

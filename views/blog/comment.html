@@ -1,0 +1,36 @@
+<ol class="comment-list">
+<%
+if(!comments || comments.length===0){
+%>
+<li class="comment">
+    <b style="color:red;">该文章还没有评论</b>
+</li>
+<%
+}else{
+var index = 1;
+comments.forEach((item)=>{
+%>
+<li id="comment-<%= index %>" class="comment">
+    <article class="comment-body">
+        <footer class="comment-meta">
+            <div class="comment-author vcard">
+                <b class="fn"><a href="<%= item.url %>" rel="external nofollow" class="url"><%= item.author %></a></b>
+                <span class="says">说：</span>
+            </div>
+            <div class="comment-metadata">
+                <a href="/article/<%= id %>#comment-<%= index %>">
+                    <time datetime="<%= item.postTime %>"><%= item.postTime %></time>
+                </a>
+            </div>
+        </footer>
+        <div class="comment-content">
+            <p><%= item.comment %></p>
+        </div>
+    </article>
+</li>
+<%
+index++;
+});
+}
+%>
+</ol>

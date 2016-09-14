@@ -1,0 +1,164 @@
+<aside class="widget widget_search">
+    <form class="search-form">
+        <input type="search" class="search-field" placeholder="Search…" id="bdcsMain" title="Search for:">
+        <input type="submit" class="search-submit" value="&nbsp;">
+        <div class="clearboth"></div>
+    </form>
+</aside>
+<aside class="widget">
+    <div id="calendar_wrap" class="calendar_wrap">
+        <table id="wp-calendar">
+            <caption>
+                <%= calendar.now.format("yyyy年MM月") %>
+            </caption>
+            <thead>
+                <tr>
+                    <th scope="col" title="星期日">日</th>
+                    <th scope="col" title="星期一">一</th>
+                    <th scope="col" title="星期二">二</th>
+                    <th scope="col" title="星期三">三</th>
+                    <th scope="col" title="星期四">四</th>
+                    <th scope="col" title="星期五">五</th>
+                    <th scope="col" title="星期六">六</th>
+                </tr>
+            </thead>
+
+            <tfoot>
+                <tr>
+                    <td colspan="3" id="prev">
+                        <%
+                        if(calendar.ltArticle){
+                        %>
+                        <a href="<%= siteUrl %>/<%= calendar.ltArticle.subUrl %>">« <%= calendar.ltArticle.month %>月</a>
+                        <%
+                        }
+                        %>
+                        
+                    </td>
+                    <td class="pad">&nbsp;</td>
+                    <td colspan="3" id="next" class="pad">
+                    <%
+                        if(calendar.gtArticle){
+                        %>
+                        <a href="<%= siteUrl %>/<%= calendar.gtArticle.subUrl %>"><%= calendar.gtArticle.month %>月 »</a>
+                        <%
+                        }
+                        %>    
+                    </td>
+                </tr>
+            </tfoot>
+
+            <tbody>
+<tr>
+    <%
+    var monthUrl = `${siteUrl}/${calendar.now.format('yyyy/MM/')}`;
+    var cal = calendar.calendar,realindex = 0;
+    for(var index = 0, l = cal.length; index < l;index++){
+        var obj = cal[index];
+        
+        if(realindex % 7 === 0 && realindex !== 0){
+    %>
+</tr><tr>
+    <%
+        }
+    %>
+    <td colspan="<%= obj.colspan %>">
+        <%
+        if(obj.count>0){
+    %>
+    <a href="<%= monthUrl + (obj.date>9?obj.date:'0'+obj.date) %>"><%= obj.date %></a>
+    <%
+        }else{
+        %>
+        <%= obj.date %>
+        <%}%>
+    </td>
+    <%
+    realindex += obj.colspan;
+    }
+    %>
+            </tbody>
+        </table>
+    </div>
+</aside>
+
+<aside class="widget">
+    <h4 class="widget-title">近期文章</h4>
+    <ul>
+        <%
+        
+        if(latestArticles){
+        latestArticles.forEach(x=>{
+        var articleUrl = siteUrl +'/article/'+ x.id;
+        %>
+            <li>
+                <a href="<%= articleUrl %>">
+                    <%= x.title %>
+                </a>
+            </li>
+            <%
+        })
+        }
+        
+        %>
+
+
+
+    </ul>
+</aside>
+<aside class="widget">
+    <h4 class="widget-title">文章归档</h4>
+    <ul>
+        <%
+        archives.sort((x,y)=>{
+            var xd = x._id.y + '' + x._id.M<10?('0'+x._id.M):x._id.M;
+            var yd = y._id.y + '' + y._id.M<10?('0'+y._id.M):y._id.M;
+            return xd<yd;
+        }).forEach((x)=>{
+        %>
+        <li><a href="<%= `${siteUrl}/${x._id.y}/${x._id.M<10?('0'+x._id.M):x._id.M}` %>"><%= `${x._id.y}年${x._id.M}月（${x.count}）` %></a></li>
+        <%
+        })
+        %>
+        
+    </ul>
+</aside>
+<aside class="widget">
+    <h4 class="widget-title">系列文章</h4>
+    <ul>
+        <li><a href="http://www.xdlysk.com/article/57331b1842c817300e0f7abf">微软BI系列目录</a></li>
+        <li><a href="http://www.xdlysk.com/article/56ea55e137540db404c9069f">定制.NET Framework CLR</a></li>
+    </ul>
+</aside>
+<aside class="widget">
+    <h4 class="widget-title">分类</h4>
+    <ul>
+        <%
+        var category = categoryTag.category;
+        for(var p in category){
+        %>
+        <li><a href="<%= `${siteUrl}/category/${p}`%>"><%= category[p].t%>[<%= category[p].c%>]</a></li>
+        <%
+        }
+        %>
+    </ul>
+</aside>
+<aside class="widget clear">
+    <h4 class="widget-title">标签</h4>
+    <%
+        var tag = categoryTag.tag;
+        var maxc=0;
+        for(var p in tag){
+            if(tag[p].c>maxc){
+                maxc = tag[p].c;
+            }
+        }
+        var lx = 40/maxc;
+        
+        for(var p in tag){
+        %>
+        <span class="tag" style="font-size:<%= tag[p].c*lx %>px"><a href="<%= `${siteUrl}/tag/${p}`%>" title="<%= tag[p].c%>篇文章"><%= tag[p].t%></a></span>
+        <%
+        }
+        %>
+</aside>

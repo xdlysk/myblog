@@ -1,12 +1,34 @@
 <% layout('admin/shared/_layout') -%>
     <link rel="stylesheet" href="/javascripts/kindeditor/themes/default/default.css" />
-    <link rel="stylesheet" href="/javascripts/kindeditor/plugins/code/prettify.css" />
-    <script src="/javascripts/knockout.js"></script>
-    <script charset="utf-8" src="/javascripts/kindeditor/kindeditor-all-min.js"></script>
-    <script charset="utf-8" src="/javascripts/kindeditor/lang/zh-CN.js"></script>
-    <script charset="utf-8" src="/javascripts/kindeditor/plugins/code/prettify.js"></script>
-
-
+    <link rel="stylesheet" href="/stylesheets/bootstrap-datetimepicker.min.css">
+    <script charset="utf-8" src="/javascripts/kindeditor/kindeditor-all.js"></script>
+    <script src="/javascripts/moment.js"></script>
+    <script src="/javascripts/bootstrap-datetimepicker.min.js"></script>
+    <style>
+        .tags ul {
+            list-style: none;
+            margin: 0;
+            padding: 5px;
+        }
+        
+        .tags ul li {
+            float: left;
+            padding: 5px;
+        }
+        
+        .tags ul li a {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .glyphicon-ok{
+            color: green;
+        }
+        
+        .glyphicon-error{
+            color: red;
+        }
+    </style>
     <div class="col-sm-9">
         <div role="form">
             <div class="input-group form-group">
@@ -18,25 +40,20 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a href="#">原创</a></li>
-                        <li><a href="#">转载</a></li>
-                        <li><a href="#">其他</a></li>
+                        <li><a href="#" data-bind="click:setSource('原创')">原创</a></li>
+                        <li><a href="#" data-bind="click:setSource('翻译')">翻译</a></li>
+                        <li><a href="#" data-bind="click:setSource('转载')">转载</a></li>
+                        <li><a href="#" data-bind="click:setSource('其他')">其他</a></li>
                     </ul>
                 </div>
                 <!-- /btn-group -->
                 <input type="text" data-bind="value:title" class="form-control" placeholder="请输入文章标题" required>
             </div>
-            <div class="input-group form-group">
-                <label class="input-group-addon">固定链接：</label>
-                <span class="input-group-addon">http://www.xdlysk.com/2016/02/26/</span>
-                <input type="text" data-bind="value:partialUrl" class="form-control" placeholder="请输入url" required>
-                <span class="input-group-addon">.html</span>
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-success">复制</button>
-                </div>
+            <div class="form-group">
+                <label>文章ID：<span data-bind="text:id"></span></label>
             </div>
             <div class="form-group">
-                <textarea id="content" cols="100" rows="8" style="width:100%;height:400px;visibility:hidden;"></textarea>
+                <textarea data-bind="value:content" id="content" cols="100" rows="8" style="width:100%;height:400px;visibility:hidden;"></textarea>
             </div>
         </div>
 
@@ -47,10 +64,13 @@
                 <h3 class="panel-title">发布<span class="caret"></span></h3>
             </div>
             <div class="panel-body">
+                <div class="form-group">
+                    <input type="text" class="form-control" data-bind="value:postTime" id="postTime">
+                </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default" data-bind="click:$root.save">保存草稿</button>
-                    <button type="button" class="btn btn-default" data-bind="click:$root.save">预览</button>
-                    <button type="button" class="btn btn-default" data-bind="click:$root.save">发布</button>
+                    <button type="button" class="btn btn-success" data-bind="click:$root.fragment">保存草稿</button>
+                    <button type="button" class="btn btn-primary" data-bind="click:$root.preview">预览</button>
+                    <button type="button" class="btn btn-warning" data-bind="click:$root.publish">发布</button>
                 </div>
             </div>
         </div>
@@ -60,13 +80,28 @@
             </div>
             <div class="panel-body">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="多个标签使用,隔开">
+                    <input type="text" class="form-control" placeholder="多个标签使用,隔开" data-bind="value:editTags">
                     <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">添加</button>
+                            <button class="btn btn-default" type="button" data-bind="click:$root.addTag,enable:editTags().length>0">添加</button>
                         </span>
                 </div>
-                <div>
+
+                <div class="tags">
+                    <ul data-bind="foreach:selectTags">
+                        <li>
+                            <span class="badge" data-bind="text:t"></span>
+                            <a class="glyphicon glyphicon-remove" data-bind="click:$root.removeTag"></a>
+                        </li>
+                    </ul>
                 </div>
+            </div>
+            <div class="panel-body tags">
+                <ul data-bind="foreach:tags">
+                        <li>
+                            <span class="badge" data-bind="text:display"></span>
+                            <a class="glyphicon glyphicon-ok" data-bind="click:$root.addATag"></a>
+                        </li>
+                </ul>
             </div>
         </div>
         <div class="panel panel-default">
@@ -77,71 +112,131 @@
                 <ul class="list-group" data-bind="foreach:categories">
                     <li class="list-group-item">
                         <label>
-                            <input type="checkbox" /><span data-bind="text:display"></span></label>
+                            <input type="checkbox" data-bind="checked:chked" /><span data-bind="text:display"></span></label>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">keywords<span class="caret"></span></h3>
+                <h3 class="panel-title">快速链接<span class="caret"></span></h3>
             </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <textarea class="form-control" rows="3" data-bind="value:keywords"></textarea>
-                </div>
-                <div>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">description<span class="caret"></span></h3>
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <textarea class="form-control" rows="3" data-bind="value:description"></textarea>
-                </div>
-                <div>
-                </div>
+            <div class="panel-body" style="max-height:250px; overflow-y:auto;">
+                <ul class="list-group">
+                    <li class="list-group-item">
+
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 
     <script>
         var editor;
+        KindEditor.ready(function(K) {
+			 editor = K.create('#content', {
+				cssPath : '/javascripts/kindeditor/plugins/code/prettify.css',
+				uploadJson : '/admin/common/upload',
+				fileManagerJson : '/admin/common/upload',
+				allowFileManager : true
+			});
+		});
         
-        var aid = '<%= aid %>';
-        aid = aid == 'undefined'?'':aid; 
+        var aid = '<%= id %>';
+        aid = aid == 'null'?'':aid; 
         
         var ArticleModel = function(){
             var self = this;
-            self.source = ko.observable('原创');
+            self.source = ko.observable();
             self.title = ko.observable();
             self.partialUrl = ko.observable();
             self.siteUrl = ko.observable();
             self.state = ko.observable();
             self.categories = ko.observableArray();
             self.tags = ko.observableArray();
-            self.keywords = ko.observable();
-            self.description = ko.observable();
+            self.selectTags = ko.observableArray();
+            self.selectCategories = ko.observableArray();
+            self.content = ko.observable();
+            self.id = ko.observable(aid);
+            self.postTime = ko.observable(new Date().format('yyyy-MM-dd hh:mm:ss'));
+            
+            self.editTags = ko.observable('');
             
             function combineModel(){
+                var scategory = ko.utils.arrayFilter(ko.unwrap(self.categories),function(d){
+                        return d.chked();
+                    });
                 return {
                     source:ko.unwrap(self.source),
                     title:ko.unwrap(self.title),
                     partialUrl:ko.unwrap(self.partialUrl),
                     content:editor.html(),
                     state:ko.unwrap(self.state),
-                    tags:ko.unwrap(self.tags),
-                    categories:ko.unwrap(self.categories),
-                    keywords:ko.unwrap(self.keywords),
-                    description:ko.unwrap(self.description)
+                    tags:ko.unwrap(self.selectTags),
+                    categories:ko.utils.arrayMap(scategory,function(d){
+                        return {
+                            t:d.display,
+                            v:d.value
+                        }
+                    }),
+                    id:self.id,
+                    postTime:$('#postTime').val()
                 };
             }
             
-            self.save=function(){
+            self.removeTag = function(tag){
+                self.selectTags.remove(tag);  
+            };
+            
+            self.addATag = function(tag){
+                var stags = self.selectTags();
+                for(var i=0 ,l = stags.length;i<l;i++){
+                    if(stags[i].v==tag.value){
+                        return;
+                    }
+                }
+                self.selectTags.push({
+                    t:tag.display,
+                    v:tag.value
+                });
+            }
+            
+            self.addTag = function(){
+                var tagstr = ko.unwrap(self.editTags);
+                var tags = tagstr.split(/,/g);
+                for(var i = 0,l = tags.length;i<l;i++){
+                    var tag = tags[i];
+                    if(!tag){continue;}
+                    self.selectTags.push({
+                        t:tag,
+                        v:tag.toLowerCase().replace(/\s+/g,'-')
+                    });
+                }
+                self.editTags('');
+            }
+            
+            self.fragment =function(){
+                self.state(1);
+                self.save();
+            }
+            
+            self.publish = function(m,e){
                 self.state(0);
+                self.save();
+            }
+            
+            self.preview = function(){
+                self.state(1);
+                self.save(function(){
+                   //do preview 
+                });
+            }
+            
+            self.setSource=function(source){
+                self.source(source);
+            };
+            
+            self.save=function(){
                 var data = combineModel();
                 $.ajax({
                     url:'/admin/article/edit',
@@ -150,10 +245,64 @@
                     success:function(data){
                         if(!data.success){
                             alert(data.msg);
+                        }else{
+                            if(data.id){
+                                self.id(data.id);
+                            }
+                            alert('保存成功');
                         }
                     },
                     complete:function(){
                         
+                    }
+                })
+            };
+            
+            self.loadData = function(id){
+                $.get('/admin/article/content?id='+id,function(data){
+                    if(!data.success){
+                        alert(data.msg);
+                        return;
+                    }                           
+                    var categories = data.categories;
+                    self.categories(ko.utils.arrayMap(categories,function(d){
+                        return {
+                            chked : ko.observable(false),
+                            display: d.display,
+                            value:d.value
+                        };
+                    }));
+                
+                    var tags = data.tags;
+                    self.tags(ko.utils.arrayMap(tags,function(d){
+                        return {
+                            display: d.display,
+                            value:d.value
+                        };
+                    }));
+                    self.source('原创');
+                    if(id){
+                        var article = data.article;
+                        self.source(article.source);
+                        self.title(article.title);
+                        self.partialUrl(article.partialUrl);
+                        editor.html(article.content);
+                        if(article.tags && article.tags.length>0 && article.tags[0].v){
+                            self.selectTags(article.tags);
+                        }
+                        if(article.categoies&& article.categoies.length>0 && article.categoies[0].v){
+                            self.selectCategories(article.categories);
+                        }
+                        self.postTime(new Date(article.postTime.time).format('yyyy-MM-dd hh:mm:ss'));
+                        
+                        //选中category
+                        for(var i=0,l=article.categories.length;i<l;i++){
+                            for(var j=0,jl=self.categories().length;j<jl;j++){
+                                if(article.categories[i].v == self.categories()[j].value){
+                                    self.categories()[j].chked(true);
+                                }
+                            }
+                        }
                     }
                 })
             };
@@ -163,39 +312,12 @@
         
         ko.applyBindings(am);
         
-        if(aid){
-            $.get('/admin/article/content/'+aid,function(data){
-                console.log(data);
-            })
-        }
-        $.get('/admin/article/category',function(data){
-            am.categories(data);
-        });
+        am.loadData(aid);
         
-        $.get('/admin/article/tag',function(data){
-            
+        $(function () {
+            $('#postTime').datetimepicker({
+                locale: 'zh-cn',
+                format:'YYYY-MM-DD HH:mm:ss' //see http://momentjs.com/docs/#/displaying/format/
+            });
         });
-
-
-
-        KindEditor.ready(function(K) {
-			 editor = K.create('#content', {
-				cssPath : '/javascripts/kindeditor/plugins/code/prettify.css',
-				uploadJson : '../asp.net/upload_json.ashx',
-				fileManagerJson : '../asp.net/file_manager_json.ashx',
-				allowFileManager : true,
-				afterCreate : function() {
-					var self = this;
-					K.ctrl(document, 13, function() {
-						self.sync();
-						K('form[name=example]')[0].submit();
-					});
-					K.ctrl(self.edit.doc, 13, function() {
-						self.sync();
-						K('form[name=example]')[0].submit();
-					});
-				}
-			});
-			prettyPrint();
-		});
     </script>

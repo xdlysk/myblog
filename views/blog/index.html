@@ -2,8 +2,106 @@
     <div id="content" class="site-content">
         <div id="primary" class="content-area">
             <main id="main" class="site-main" role="main">
+                
+                <%if(hashead){%>
+                <header class="page-header">
+				    <h1 class="page-title">
+					    <%= headInfo.label %>: <span><%= headInfo.content %></span>
+                    </h1>
+                </header>
+                <%
+                }
+                articles.forEach(x=>{
+                    var articleUrl = siteUrl + '/article/' + x.id,
+                    postTime = new Date(x.postTime.time).format('yyyy-MM-dd');
+                %>
+                    <article class="post-no-img blog-post-side-layout post type-post">
+                        <div class="post-loop-content">
+                            <header class="entry-header">
+                                <h1 class="entry-title"><a href="<%= articleUrl %>" rel="bookmark"><%= x.title %></a></h1>
+                                <div class="entry-meta">
+                                    <span class="entry-posted">
+                                    <span class="posted-on">Posted on <a href="<%= articleUrl %>" rel="bookmark">
+                                        <time class="entry-date published updated"><%= postTime %></time></a></span>
+                                        <span class="byline"> by <span class="author vcard"><a class="url fn n" href="<%= siteUrl %>/author/<%= x.poster %>"><%= x.poster %></a></span></span>
+                                    </span>
+                                    <!-- .entry-meta -->
+                                    <span class="comments-link"><a href="<%= articleUrl %>#respond">Leave a comment</a></span>                                        
+                                </div>
+                            </header>
+                            <!-- .entry-header -->
+                            <div class="entry-content"><%= x.summary %><a class="read-more" href="<%= articleUrl %>">Read More</a></div>
+                            <!-- .entry-content -->
+                            <footer class="entry-footer">
+                                    <%
+                                    if(x.categories && x.categories[0]){
+                                    %>
+                                    <span class="cat-links">Posted in <%
+                                        x.categories.forEach(ca=>{
+                                            if(ca.v){
+                                            %>
+                                            <a href="<%= siteUrl %>/category/<%= ca.v %>" rel="category tag"><%= ca.t %></a><%
+                                            }
+                                        })
+                                            %>
+                                          </span>  
+                                            <%
+                                    }
+                                    if(x.tags && x.tags[0]){
+                                    %>
+                                    <span class="tags-links">Tagged <%
+                                        x.tags.forEach(ca=>{
+                                            if(ca.v){
+                                            %>
+                                            <a href="<%= siteUrl %>/tag/<%= ca.v %>" rel="tag"><%= ca.t %></a><%
+                                            }
+                                        })
+                                            %>
+                                        </span>    
+                                            <%
+                                    }
+                                    %>
+                            </footer>
+                            <!-- .entry-footer -->
+                        </div>
+                        <div class="clearboth"></div>
+                    </article>
+                    <%
+                })
+                if(hasNextPage || page != 1){
+                
+                %>
+                <nav class="navigation paging-navigation" role="navigation">
+                    <h1 class="screen-reader-text">Posts navigation</h1>
+                    <div class="nav-links">
+                        <%
+                        var prevUrl = siteUrl;
+                        if(hashead && headInfo.partUrl){
+                            prevUrl = prevUrl + '/' + headInfo.partUrl;
+                        }
+                        if(hasNextPage){
+                        %>
+                        <div class="nav-previous"><a href="<%= prevUrl %>/page/<%= page+1 %>"><span class="meta-nav">←</span> Older posts</a></div>
+                        <%
+                        }
+                        if(page!=1){
+                            var endUrl = '/page/';
+                            if(page===2){
+                                endUrl='';
+                            }else{
+                                endUrl = endUrl + (page-1);
+                            }
+                        %>
+                        <div class="nav-next"><a href="<%= prevUrl + endUrl %>">Newer posts <span class="meta-nav">→</span></a></div>
+                        <%
+                        }
+                        %>
+                    </div><!-- .nav-links -->
+                </nav>
+                <%}%>
             </main>
         </div>
         <div id="secondary" class="widget-area" role="complementary">
+            <% include shared/sidebar.html %>
         </div>
     </div>

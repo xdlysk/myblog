@@ -7,63 +7,164 @@
         .panel-footer {
             text-align: right;
         }
+        
+        .dh {
+            display: none;
+        }
+        
+        #list tr:hover .dh {
+            display: block;
+        }
     </style>
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="form-inline" role="form">
-                <button type="button" class="btn btn-success" onclick="location.href='/admin/article/edit'">写文章</button>
+                <button type="button" class="btn btn-success" onclick="location.href='/admin/article/edit.html'">写文章</button>
                 <select name="" id="" class="form-control"></select>
                 <input type="text" class="form-control" placeholder="请输入文章标题">
                 <button type="button" class="btn btn-primary">筛选</button>
             </div>
         </div>
-        <table class="table table-hover">
+        <table class="table table-hover" id="list">
             <thead>
                 <tr>
                     <th>标题</th>
-                    <th>作者</th>
-                    <th>分类</th>
-                    <th>标签</th>
-                    <th>评论</th>
-                    <th>日期</th>
+                    <th style="width:150px">作者</th>
+                    <th style="width:150px">分类</th>
+                    <th style="width:150px">标签</th>
+                    <th style="width:50px">评论</th>
+                    <th style="width:200px">日期</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-bind="foreach:articles">
                 <tr>
                     <td>
-                        <div><a href="" data-bind="text:title"></a></div>
                         <div>
-                            <span>2</span>
-                            <span>3</span>
-                            <span>4</span>
+                            <a data-bind="text:title,attr:{href:'/admin/article/edit.html?id='+_id}"></a>
+                        </div>
+                        <div class='dh'>
+                            <span><a data-bind="attr:{href:'/admin/article/edit.html?id='+_id}">[编辑]</a></span>
+                            <span><a href="javascript:void(0)" data-bind="click:$root.dropMe">[垃圾箱]</a></span>
+                            <span><a target="_blank" data-bind="attr:{href:'/article/'+_id}">[查看]</a></span>
                         </div>
                     </td>
-                    <td>Bangalore</td>
-                    <td>Sachin</td>
-                    <td>Mumbai</td>
-                    <td>Sachin</td>
-                    <td>Mumbai</td>
+                    <td data-bind="text:poster"></td>
+                    <td data-bind="text:categories"></td>
+                    <td data-bind="text:tags"></td>
+                    <td><a data-bind="attr:{href:'/admin/article/comment.html?id='+_id}"><span class="badge" data-bind="text:comment"></span></a></td>
+                    <td>
+                        <div data-bind="text:state"></div>
+                        <div data-bind="text:postTime"></div>
+                    </td>
                 </tr>
 
             </tbody>
         </table>
-        <div class="panel-footer">
+        <div class="panel-footer" id="pager">
             <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">&raquo;</a></li>
+                <!-- ko foreach:pageList -->
+                <li>
+                    <a data-bind="click:$root.loadPage,text:t"></a>
+                </li>
+                <!-- /ko -->
+                <li>
+                    <span data-bind="text:pageDisplay"></span>
+                </li>
             </ul>
+
         </div>
     </div>
     <script>
         var ArticleModel = function(){
             var self = this;
-            self.articles = ko.observableArray();
+            self.articles = ko.observableArray([]);
+            self.pageList = ko.observableArray([]);
+            
+            self.pageDisplay = ko.observable();
+            
+            var allpage;
+            
+            var setPageList = function(current){
+                var step = 5;
+                var pages = [{page:current,t:current}];
+                for(var i=1;i<step;i++){
+                    var next= current+i;
+                    if(next <=allpage){
+                        pages.push({page:next,t:next});
+                    }
+                    var prev = current -i;
+                    if(prev >0){
+                        pages.unshift({page:prev,t:prev});
+                    }
+                }
+                pages.unshift({page:1,t:'<<'});
+                pages.push({page:allpage,t:'>>'});
+                self.pageList(pages);
+            }
+            
+            self.getState=function(s){
+                switch(s){
+                    case -1:
+                    return '垃圾箱'
+                    case 0:
+                    return '已发布';
+                    case 1:
+                    return '草稿';
+                    default:
+                    return '已删除';
+                }
+            };
+            
+            self.dropMe = function(item){
+                if(!confirm('确认删除该文档？')){
+                    return;
+                }
+                $.get('/admin/article/drop/'+item._id,function(data){
+                    if(!data.success){
+                        alert('删除失败');
+                    }else{
+                        alert('删除成功');
+                        item.state(self.getState(-1));
+                    }
+            })};
+            
+            self.buildArticles = function(as){
+                return ko.utils.arrayMap(as,function(a){
+                    return {
+                        hover:ko.observable(false),
+                        _id:a._id,
+                        title:a.title,
+                        state:ko.observable(self.getState(a.state)),
+                        poster:a.poster,
+                        postTime:new Date(a.postTime.time).format('yyyy-MM-dd'),
+                        comment:a.comment,
+                        categories:ko.utils.arrayMap(a.categories,function(c){
+                            return c.t;
+                        }),
+                        tags:ko.utils.arrayMap(a.tags,function(t){
+                            return t.t;
+                        })
+                    }
+                });
+            }
+            
+            self.loadPage = function(item){
+                $.get('/admin/article/list/'+item.page,function(data){
+                    if(!data.success){
+                        alert(data.msg);
+                    }else{
+                        allpage = data.page;
+                        self.pageDisplay(item.page+"/"+allpage+" 共" +data.count + "条" );
+                        setPageList(item.page);
+                        self.articles(self.buildArticles(data.articles));
+                    }
+                });
+            }
         }
         
+        var am = new ArticleModel();
         
+        ko.applyBindings(am);
+        
+        am.loadPage({page:1});
     </script>

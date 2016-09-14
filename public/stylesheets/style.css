@@ -651,6 +651,7 @@ a:active {
 	clear: both;
 	display: block;
 	margin: 0 auto;
+    text-align: center;
 }
 
 /*--------------------------------------------------------------
@@ -937,9 +938,10 @@ a:active {
     
 }
 
-.single-post .content-area .post.type-post {
+.post {
     background-color: #FFF;
     padding: 30px 25px 35px;
+    margin: 0 0 40px;
 }
 
 .page .attachment-post-thumbnail,
@@ -1398,6 +1400,7 @@ article.post {
 .entry-content,
 .entry-summary {
 	margin: 1.5em 0 20px;
+    word-break: break-word;
 }
 
 .blog .entry-content .page-links {
@@ -1543,6 +1546,7 @@ object {
 
 .wp-caption .wp-caption-text {
 	margin: 0.8075em 0;
+    display: block;
 }
 
 /*--------------------------------------------------------------
@@ -1607,6 +1611,11 @@ object {
         color: #FFF;
     }
     
+}
+@media screen and (min-width:783px){
+    .main-navigation ul{
+        display: block !important;
+    }
 }
 
 @media screen and (max-width: 782px) {
@@ -1912,4 +1921,10 @@ margin:0 0 15px 0;
 p{
 text-indent: 2em;
 }
+
+span.tag{
+    float: left;
+    padding: 2px;
+}
+
 
